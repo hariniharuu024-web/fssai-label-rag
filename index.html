@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FSSAI Label Checker</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:800px;margin:30px auto;padding:0 15px}
+textarea{width:100%;height:180px;padding:10px;box-sizing:border-box}
+button{padding:10px 20px;background:#2e7d32;color:#fff;border:0;border-radius:5px;cursor:pointer}
+#out{white-space:pre-wrap;background:#f4f4f4;padding:15px;margin-top:15px;border-radius:5px}
+</style>
+</head>
+<body>
+<h2>FSSAI Packaging &amp; Labeling Compliance Checker</h2>
+<p>Paste the text printed on a food package label:</p>
+<textarea id="t" placeholder="Name, ingredients, net weight, veg mark, allergen info, FSSAI licence no, best before..."></textarea><br><br>
+<button onclick="go()">Check Compliance</button>
+<div id="out"></div>
+<script>
+async function go(){
+  const o = document.getElementById('out');
+  o.textContent = 'Checking...';
+  try{
+    const r = await fetch('/validate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({text: document.getElementById('t').value})
+    });
+    const d = await r.json();
+    o.textContent = d.result + '\n\nSource pages: ' + d.sources.join(', ');
+  }catch(e){ o.textContent = 'Error: ' + e; }
+}
+</script>
+</body>
+</html>
